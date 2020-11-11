@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:expense_manager_firebase/Services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -10,25 +12,20 @@ class Splash extends StatefulWidget {
 
 class _SplashState extends State<Splash> {
 
-  void loadingtime() async{
-    await Future.delayed(Duration(seconds: 3), () {
-      setState(() {
-        Navigator.popAndPushNamed(context, "/w");
-      });
-    });
-  }
-
-  @override
-  void initState(){
-    super.initState();
-    loadingtime();
-  }
-
   @override
   Widget build(BuildContext context) {
     final so = Provider.of<Auth>(context);
     if(so.loading == true){
-      so.getuserdata();
+      so.getuserdata().whenComplete(() {
+        if(so.uid != null){
+          Navigator.popAndPushNamed(context, "/w");
+        }
+        else{
+          Timer(Duration(seconds: 2), () {
+            Navigator.pushReplacementNamed(context, "/w");
+          });
+        }
+      });
     }
     return Scaffold(
       backgroundColor: Colors.black,

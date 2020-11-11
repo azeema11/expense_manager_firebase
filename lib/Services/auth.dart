@@ -49,6 +49,8 @@ class Auth extends ChangeNotifier{
         pref.setString("User Id", auth["localId"]);
         await getuserdata();
       }
+    }).timeout(Duration(seconds: 20),onTimeout: (){
+      lerrorstr("Server Timed-Out");
     });
   }
 

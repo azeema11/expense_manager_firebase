@@ -187,7 +187,7 @@ class _Home extends State<Home>{
                           ),
                           SizedBox(height: MediaQuery.of(context).size.height/50,),
                           Text(
-                            ho.usrdoc == null? "":ho.usrdoc["fields"]["Name"]["stringValue"],
+                            ho.usrdoc.toString(),//ho.usrdoc == null? "":ho.usrdoc["fields"]["Name"]["stringValue"],
                             style: TextStyle(
                               fontSize: 21.0,
                               fontWeight: FontWeight.w500,
