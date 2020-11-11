@@ -15,14 +15,15 @@ class _SplashState extends State<Splash> {
   @override
   Widget build(BuildContext context) {
     final so = Provider.of<Auth>(context);
-    if(so.loading == true){
+    if(so.checklogin == false){
+      so.checklogin = true;
       so.getuserdata().whenComplete(() {
         if(so.uid != null){
           Navigator.popAndPushNamed(context, "/w");
         }
         else{
           Timer(Duration(seconds: 2), () {
-            Navigator.pushReplacementNamed(context, "/w");
+            Navigator.popAndPushNamed(context, "/w");
           });
         }
       });

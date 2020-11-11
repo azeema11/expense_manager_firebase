@@ -73,7 +73,7 @@ class _Login extends State<Login>{
               ),
               SizedBox(height: MediaQuery.of(context).size.height/40),
               Center(
-                child: RaisedButton(
+                child: lo.loading == true? CircularProgressIndicator() : RaisedButton(
                   color: Colors.blueGrey[800],
                   textColor: Colors.white,
                   onPressed: () {

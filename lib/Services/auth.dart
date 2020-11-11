@@ -8,7 +8,7 @@ class Auth extends ChangeNotifier{
 
   int sum = 0;
   DateTime d = DateTime.now().subtract(Duration(days: 6));
-  bool loading = true;
+  bool loading = false;
   List expenses;
   var usrdoc;
   String uid;
@@ -16,6 +16,7 @@ class Auth extends ChangeNotifier{
   String lstr;
   String rstr;
   String url = "https://firestore.googleapis.com/v1beta1/projects/expense-manager-303f3/databases/(default)/documents/";
+  bool checklogin = false;
 
   void lerrorstr(String s){
     lstr = s;
@@ -27,7 +28,13 @@ class Auth extends ChangeNotifier{
     notifyListeners();
   }
 
+  void loadingfun(bool load){
+    loading = load;
+    notifyListeners();
+  }
+
   Future login(String email, String pass) async{
+    loadingfun(true);
     final SharedPreferences pref = await SharedPreferences.getInstance();
     Map credential = {"email": email, "password": pass};
     await post(
@@ -35,14 +42,18 @@ class Auth extends ChangeNotifier{
       body: credential
     ).catchError((e){
       if(email == null || pass == null){
+        loading = false;
         lerrorstr("Enter valid email and password");
       }
       else{
+        loading = false;
         lerrorstr(e.toString());
       }
+      notifyListeners();
     }).then((value) async{
       auth = jsonDecode(value.body);
       if(auth["localId"] == null){
+        loading = false;
         lerrorstr("Enter valid email and password");
       }
       else{
@@ -50,11 +61,13 @@ class Auth extends ChangeNotifier{
         await getuserdata();
       }
     }).timeout(Duration(seconds: 20),onTimeout: (){
+      loading = false;
       lerrorstr("Server Timed-Out");
     });
   }
 
   Future register(String email, String pass, String name, File img) async{
+    loadingfun(true);
     String image = "";
     final SharedPreferences pref = await SharedPreferences.getInstance();
     Map credentials = {"email": email, "password": pass};
@@ -62,11 +75,13 @@ class Auth extends ChangeNotifier{
       "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyBoddg4vYBPy-YMuYy2-V2fvgtAFg0LW3Q",
       body: credentials
     ).catchError((e){
+      loading = false;
       rerrorstr(e.toString());
     }).then((value) async{
       auth = jsonDecode(value.body);
       if(auth.containsKey("error")){
         if(auth["error"].containsValue("EMAIL_EXISTS")){
+          loading = false;
           rerrorstr("Email already exists");
         }
       }
@@ -76,14 +91,18 @@ class Auth extends ChangeNotifier{
         await post(
           url+"Users?documentId="+auth["localId"],
           body: jsonEncode(details),
-        ).then((value) => print(value.body));
+        );
         pref.setString("User Id", auth["localId"]);
         await getuserdata();
       }
-    });
+    }).timeout(Duration(seconds: 20), onTimeout: () {
+      loading = false;
+      rerrorstr("Server Timed-Out");
+    },);
   }
 
   Future getuserdata() async{
+    //loadingfun(true);
     await SharedPreferences.getInstance().then((value) async{
       value.containsKey("User Id")? uid = value.getString("User Id") : uid = null;
       if(uid != null){
@@ -97,11 +116,14 @@ class Auth extends ChangeNotifier{
           }
         });
       }
+      else{
+        loadingfun(false);
+      }
     });
-    loading = false;
   }
 
   Future getalldata() async{
+    loadingfun(true);
     sum = 0;
     await get(url+"Users/"+uid+"/Expenses").then((value) {
       expenses = jsonDecode(value.body)["documents"];
@@ -111,11 +133,12 @@ class Auth extends ChangeNotifier{
           sum = sum + int.parse(element["fields"]["Amount"]["integerValue"]);
         });
       }
-      notifyListeners();
+      loadingfun(false);
     });
   }
 
   Future setdata(String purpose, double amount, DateTime date) async{
+    loadingfun(true);
     Map details = {"fields": {"Purpose": {"stringValue": purpose}, "Amount": {"integerValue": amount}, "Date": {"timestampValue": date.toUtc().toIso8601String()}}};
     await post(
       url+"Users/"+uid+"/Expenses",
@@ -128,11 +151,13 @@ class Auth extends ChangeNotifier{
           expenses.sort((b,a)=> a["fields"]["Date"]["timestampValue"].compareTo(b["fields"]["Date"]["timestampValue"]));
         }
       }
+      loading = false;
       notifyListeners();
     });
   }
 
   Future signOut() async{
+    loadingfun(true);
     final SharedPreferences pref = await SharedPreferences.getInstance();
     pref.remove("User Id");
     uid = null;
@@ -140,20 +165,24 @@ class Auth extends ChangeNotifier{
     usrdoc = null;
     expenses = null;
     d = DateTime.now().subtract(Duration(days: 6));
+    loading = false;
     notifyListeners();
   }
 
   Future deleteexp(String s, int pos) async{
+    loadingfun(true);
     await delete(
       "https://firestore.googleapis.com/v1beta1/" + s
     ).whenComplete(() {
       sum = sum - int.parse(expenses[pos]["fields"]["Amount"]["integerValue"]);
       expenses.removeAt(pos);
+      loading = false;
       notifyListeners();
     });
   }
 
   Future getdata() async{
+    loadingfun(true);
     sum = 0;
     expenses = [];
     Map query = {
@@ -193,6 +222,7 @@ class Auth extends ChangeNotifier{
       if(expenses.length > 1){
         expenses.sort((b,a)=> a["fields"]["Date"]["timestampValue"].compareTo(b["fields"]["Date"]["timestampValue"]));
       }
+      loading = false;
       notifyListeners();
     });
   } 

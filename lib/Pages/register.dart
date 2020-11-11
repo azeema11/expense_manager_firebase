@@ -223,7 +223,7 @@ class _Register extends State<Register>{
               ),
               SizedBox(height: MediaQuery.of(context).size.height/80),
               Center(
-                child: RaisedButton(
+                child: ro.loading == true? CircularProgressIndicator() : RaisedButton(
                   color: Colors.blueGrey[800],
                   textColor: Colors.white,
                   onPressed: () {

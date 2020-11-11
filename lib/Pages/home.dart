@@ -187,7 +187,7 @@ class _Home extends State<Home>{
                           ),
                           SizedBox(height: MediaQuery.of(context).size.height/50,),
                           Text(
-                            ho.usrdoc.toString(),//ho.usrdoc == null? "":ho.usrdoc["fields"]["Name"]["stringValue"],
+                            ho.usrdoc == null? "":ho.usrdoc["fields"]["Name"]["stringValue"],
                             style: TextStyle(
                               fontSize: 21.0,
                               fontWeight: FontWeight.w500,
@@ -342,7 +342,17 @@ class _Home extends State<Home>{
               ],
             ),
             SizedBox(height: MediaQuery.of(context).size.height/50,),
-            Expanded(
+            ho.loading == true? 
+            Column(
+              children: [
+                SizedBox(height: MediaQuery.of(context).size.height/4,),
+                Padding(
+                  padding: const EdgeInsets.all(14.0),
+                  child: LinearProgressIndicator(),
+                ),
+              ],
+            ) 
+            : Expanded(
               child: ho.expenses == null || ho.expenses.length == 0? Center(child:Text("No expenses")) : ListView.builder(
                 itemCount: ho.expenses.length,
                 itemBuilder: (context, pos){
