@@ -1,6 +1,5 @@
 import 'package:expense_manager_firebase/Pages/home.dart';
 import 'package:expense_manager_firebase/Pages/login.dart';
-import 'package:expense_manager_firebase/Pages/otp.dart';
 import 'package:expense_manager_firebase/Pages/register.dart';
 import 'package:expense_manager_firebase/Pages/splash.dart';
 import 'package:expense_manager_firebase/Pages/wrap.dart';

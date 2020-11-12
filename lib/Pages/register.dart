@@ -37,7 +37,7 @@ class _Register extends State<Register>{
         compressQuality: 100,
         compressFormat: ImageCompressFormat.jpg,
         androidUiSettings: AndroidUiSettings(
-          toolbarColor: Colors.green[800],
+          toolbarColor: Colors.white,
           toolbarTitle: "Profile Image",
           showCropGrid: true,
         ),
