@@ -31,7 +31,7 @@ dependencies:
   shared_preferences:
   flutter_rounded_date_picker:
   image_picker:
-  image_cropper: ^1.2.3
+  image_cropper: 
 
 
   # The following adds the Cupertino Icons font to your application.
